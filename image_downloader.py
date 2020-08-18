@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 
-df = pd.read_csv("C:/RScripts/Zillow Analysis/photo_links_to_download.csv")
+df = pd.read_csv("C:/RScripts/Zillow Analysis/Lancaster-County-Home-Values/Data/photo_links_to_download.csv")
 
 
 for i in range(0, len(df)):
