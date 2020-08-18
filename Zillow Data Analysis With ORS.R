@@ -8,6 +8,7 @@ library(magrittr)
 library(glue)
 library(openrouteservice)
 library(osmdata)
+library(ggpointdensity)
 
 # Read Data ---------------------------------------------------------------
 details_path = "./Zillow Analysis/Data/Home_Listing_details_2020-8-15.csv"
@@ -142,6 +143,8 @@ for(i in 1:nrow(geo_data)){ # other way to do this if tidyverse syntax fails
 
 # Open Street Maps Visualizations -----------------------------------------
 
+# httr::set_config(httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L))
+
 lancaster_co = getbb("Lancaster County, Pennsylvania")
 
 streets = lancaster_co %>%
@@ -166,7 +169,7 @@ gg1 = details_cleaned %>%
   ggplot() +
   geom_sf(data = small_streets$osm_lines, col = 'grey40', size = .1) +
   geom_sf(data = streets$osm_lines, col = 'grey40', size = .4) +
-  geom_pointdensity(aes(geo_longitude, geo_latitude), size = 6, alpha = .8) +
+  geom_pointdensity(aes(geo_longitude, geo_latitude), size = 1, alpha = .8) +
   geom_sf(data = small_streets$osm_lines, col = alpha('grey40', .2), size = .1) +
   geom_sf(data = streets$osm_lines, col = alpha('grey40', .2), size = .4) +
   scale_color_viridis_c(option = 'inferno') +
