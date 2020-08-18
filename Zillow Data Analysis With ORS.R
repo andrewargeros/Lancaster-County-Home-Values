@@ -169,7 +169,7 @@ gg1 = details_cleaned %>%
   ggplot() +
   geom_sf(data = small_streets$osm_lines, col = 'grey40', size = .1) +
   geom_sf(data = streets$osm_lines, col = 'grey40', size = .4) +
-  geom_pointdensity(aes(geo_longitude, geo_latitude), size = 1, alpha = .8) +
+  geom_pointdensity(aes(geo_longitude, geo_latitude), size = 2, alpha = .8) +
   geom_sf(data = small_streets$osm_lines, col = alpha('grey40', .2), size = .1) +
   geom_sf(data = streets$osm_lines, col = alpha('grey40', .2), size = .4) +
   scale_color_viridis_c(option = 'inferno') +
