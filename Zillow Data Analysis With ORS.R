@@ -11,10 +11,10 @@ library(osmdata)
 library(ggpointdensity)
 
 # Read Data ---------------------------------------------------------------
-details_path = "./Zillow Analysis/Data/Home_Listing_details_2020-8-15.csv"
+details_path = "./Zillow Analysis/Lancaster-County-Home-Values/Data"
 
-ad = read_csv("./Zillow Analysis/Data/Lancaster_Listings_Zillow.csv")
-details = read_csv(details_path)
+ad = read_csv(glue("{details_path}/Lancaster_Listings_Zillow.csv"))
+details = read_csv(glue("{details_path}/Home_Listing_details_2020-8-15.csv"))
 
 
 # Data Wrangling ----------------------------------------------------------
