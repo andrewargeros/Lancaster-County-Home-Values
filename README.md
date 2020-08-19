@@ -9,4 +9,12 @@ The code creates a new proxy user agent each pass using a unique hash from the `
 
 ## Photo Downloads
 
-As part of the above scraping process, the `href` tag of the listing's cover image is extracted as a feature. After mild cleaning using R, these links are downloaded into .png files using `imagedownloader.py`. These are saved for image detection/classification later. 
+As part of the above scraping process, the `href` tag of the listing's cover image is extracted as a feature. After mild cleaning using R, these links are downloaded into .png files using `imagedownloader.py`. These are saved for image detection/classification later.
+
+## OpenRouteService
+
+In R, the OpenRouteService API is used to calculate the driving time and distance from each listing to both Lancaster and Philadelphia, PA. API tokens can be requested at https://openrouteservice.org/ . Note, with a free account, only 2000 directions requests can be made perday, thus it currently takes two attemps to run the code to generate these listings.
+
+## RestB API
+
+Using a trial of the RestB API, a neural-based API for real estate listings. By passing the listing cover images to the api, a classification of, first whether the image is of a house, and in what style of architecture is the house built.
