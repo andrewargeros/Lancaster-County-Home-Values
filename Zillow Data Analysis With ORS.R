@@ -56,6 +56,7 @@ details_cleaned %>%
 # Lancaster and Philadelphia, PA. Free accounts can be made, and these allow for 2000 requests per day.
 # This data frame contains 1194 listings, thus drive times must be computed using distinct values.
 
+api_key = "5b3ce3597851110001cf6248749acdcca12b47c4bcc96d81689a334a"
 ors_api_key("5b3ce3597851110001cf6248749acdcca12b47c4bcc96d81689a334a") # Change API key
 
 test_coords = details_cleaned %>% 
@@ -66,7 +67,7 @@ test_coords = details_cleaned %>%
 test_lat = test_coords %>% select(geo_latitude) %>% as.numeric()
 test_lng = test_coords %>% select(geo_longitude) %>% as.numeric() # Test coordinates values
 
-lancaster = c(-76.1784, 40.0467)
+lancaster = c(-76.3055, 40.0379)
 philadelphia = c(-75.1575, 39.9509) # Centers of Cities 
 
 get_distance_to = function(lat, lon, destination) { # Function to return drive time in minutes to specified coordinate pair
@@ -179,9 +180,33 @@ gg1 = details_cleaned %>%
   theme(legend.position = "none",
         plot.background = element_rect(fill = "#282828"))
 
+gg2 = details_cleaned %>% 
+  ggplot() +
+  geom_sf(data = small_streets$osm_lines, col = 'grey40', size = .1) +
+  geom_sf(data = streets$osm_lines, col = 'grey40', size = .4) +
+  geom_pointdensity(aes(geo_longitude, geo_latitude, color = log(price_sqft)), size = 2, alpha = .8) +
+  geom_sf(data = small_streets$osm_lines, col = alpha('grey40', .2), size = .1) +
+  geom_sf(data = streets$osm_lines, col = alpha('grey40', .2), size = .4) +
+  scale_color_viridis_c(option = 'inferno') +
+  coord_sf(xlim = lancaster_co[1,], ylim = lancaster_co[2,], expand = FALSE) + 
+  geom_blank() +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#282828"))
 
 
+# Open Route Service Isochrones -------------------------------------------
 
+isochrome_test = ors_isochrones(lancaster, range = 1200, api_key = api_key)
+
+pt1 = ors_geocode(-76.3055, 40.0379, api_key = api_key)
+ors_profile("car")
+library(leaflet)
+leaflet() %>% 
+  addProviderTiles(providers$Stamen.Toner) %>% 
+  addGeoJSON(isochrome_test, fill = T, color = "#EE2737", opacity = 1) %>% 
+  addGeoJSON(pt1, color = "#EE2737", weight = 6) %>%
+  fitBBox(isochrome_test$bbox)
 
 
 
