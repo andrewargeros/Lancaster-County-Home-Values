@@ -174,7 +174,7 @@ gg1 = details_cleaned %>%
   geom_sf(data = small_streets$osm_lines, col = alpha('grey40', .2), size = .1) +
   geom_sf(data = streets$osm_lines, col = alpha('grey40', .2), size = .4) +
   scale_color_viridis_c(option = 'inferno') +
-  coord_sf(xlim = lancaster_co[1,], ylim = lancaster_co[2,], expand = FALSE) + 
+  coord_sf(xlim = lancaster_co[1,], ylim = lancaster_co[2,], expand = TRUE) + 
   geom_blank() +
   theme_void() +
   theme(legend.position = "none",
@@ -188,7 +188,7 @@ gg2 = details_cleaned %>%
   geom_sf(data = small_streets$osm_lines, col = alpha('grey40', .2), size = .1) +
   geom_sf(data = streets$osm_lines, col = alpha('grey40', .2), size = .4) +
   scale_color_viridis_c(option = 'inferno') +
-  coord_sf(xlim = lancaster_co[1,], ylim = lancaster_co[2,], expand = FALSE) + 
+  coord_sf(xlim = lancaster_co[1,], ylim = lancaster_co[2,], expand = TRUE) + 
   geom_blank() +
   theme_void() +
   theme(legend.position = "none",
