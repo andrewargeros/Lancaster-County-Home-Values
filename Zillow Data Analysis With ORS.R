@@ -170,9 +170,11 @@ gg1 = details_cleaned %>%
   ggplot() +
   geom_sf(data = small_streets$osm_lines, col = 'grey40', size = .1) +
   geom_sf(data = streets$osm_lines, col = 'grey40', size = .4) +
-  geom_pointdensity(aes(geo_longitude, geo_latitude), size = 2, alpha = .8) +
   geom_sf(data = small_streets$osm_lines, col = alpha('grey40', .2), size = .1) +
   geom_sf(data = streets$osm_lines, col = alpha('grey40', .2), size = .4) +
+  geom_sf(data = isochrome_test$geometry, color = "#6a8bad", fill = NA, size = 2) +
+  geom_sf(data = isochrome_30$geometry, color = "#3e5871", fill = NA, size = 2) +
+  geom_pointdensity(aes(geo_longitude, geo_latitude), size = 2, alpha = .8) +
   scale_color_viridis_c(option = 'inferno') +
   coord_sf(xlim = lancaster_co[1,], ylim = lancaster_co[2,], expand = TRUE) + 
   geom_blank() +
@@ -184,9 +186,9 @@ gg2 = details_cleaned %>%
   ggplot() +
   geom_sf(data = small_streets$osm_lines, col = 'grey40', size = .1) +
   geom_sf(data = streets$osm_lines, col = 'grey40', size = .4) +
-  geom_pointdensity(aes(geo_longitude, geo_latitude, color = log(price_sqft)), size = 2, alpha = .8) +
   geom_sf(data = small_streets$osm_lines, col = alpha('grey40', .2), size = .1) +
   geom_sf(data = streets$osm_lines, col = alpha('grey40', .2), size = .4) +
+  geom_pointdensity(aes(geo_longitude, geo_latitude, color = log(price_sqft)), size = 2, alpha = .8) +
   scale_color_viridis_c(option = 'inferno') +
   coord_sf(xlim = lancaster_co[1,], ylim = lancaster_co[2,], expand = TRUE) + 
   geom_blank() +
@@ -197,14 +199,16 @@ gg2 = details_cleaned %>%
 
 # Open Route Service Isochrones -------------------------------------------
 
-isochrome_test = ors_isochrones(lancaster, range = 1200, api_key = api_key)
+isochrome_test = ors_isochrones(lancaster, range = 1200, api_key = api_key, output = "sf")
+isochrome_30 = ors_isochrones(lancaster, range = 1800, api_key = api_key, output = "sf")
+isochrome_test_gj = ors_isochrones(lancaster, range = 1800, api_key = api_key)
 
 pt1 = ors_geocode(-76.3055, 40.0379, api_key = api_key)
 ors_profile("car")
 library(leaflet)
 leaflet() %>% 
   addProviderTiles(providers$Stamen.Toner) %>% 
-  addGeoJSON(isochrome_test, fill = T, color = "#EE2737", opacity = 1) %>% 
+  addGeoJSON(isochrome_test_gj, fill = T, color = "#EE2737", opacity = 1) %>% 
   addGeoJSON(pt1, color = "#EE2737", weight = 6) %>%
   fitBBox(isochrome_test$bbox)
 
