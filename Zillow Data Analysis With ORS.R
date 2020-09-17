@@ -37,7 +37,8 @@ details_cleaned = details %>%
             address_postal_code = as.integer(address_postal_code),
             year_built = as.integer(year_built),
             price_sqft = as.numeric(price_sqft),
-            hoa = as.numeric(hoa)) # Change Variable Types
+            hoa = as.numeric(hoa)) %>% # Change Variable Types
+  mutate(est_price = price_sqft*floor_size_value)
 
 ad_cln = ad %>% 
   mutate(url_ext = str_replace_all(url, "^https://www.zillow.com", "")) %>% 
@@ -57,7 +58,7 @@ details_cleaned %>%
 # This data frame contains 1194 listings, thus drive times must be computed using distinct values.
 
 api_key = "5b3ce3597851110001cf6248749acdcca12b47c4bcc96d81689a334a"
-ors_api_key("5b3ce3597851110001cf6248749acdcca12b47c4bcc96d81689a334a") # Change API key
+# ors_api_key("5b3ce3597851110001cf6248749acdcca12b47c4bcc96d81689a334a") # Change API key
 
 test_coords = details_cleaned %>% 
   filter(!is.na(geo_latitude)) %>% 
@@ -70,7 +71,7 @@ test_lng = test_coords %>% select(geo_longitude) %>% as.numeric() # Test coordin
 lancaster = c(-76.3055, 40.0379)
 philadelphia = c(-75.1575, 39.9509) # Centers of Cities 
 
-get_distance_to = function(lat, lon, destination) { # Function to return drive time in minutes to specified coordinate pair
+get_distance_to = function(lat, lon, destination, key) { # Function to return drive time in minutes to specified coordinate pair
   out = tryCatch(
     {
       Sys.sleep(5)
@@ -78,7 +79,7 @@ get_distance_to = function(lat, lon, destination) { # Function to return drive t
       
       coords = list(c(lon, lat), destination)
       
-      directions = ors_directions(coords)
+      directions = ors_directions(coords, api_key = key)
       time = directions[["features"]][[1]][["properties"]][["summary"]][["duration"]]
       
       mins = time/60
@@ -106,8 +107,7 @@ get_distance_to(NA, test_lng, philadelphia) # Test Functions
 lancaster_drives = details_cleaned %>% 
   select(geo_latitude, geo_longitude) %>% 
   distinct() %>% # Add distance to Philadelphia and Lancaster to details cleaned
-  mutate(lanc_drive = map2(.x = geo_latitude, .y = geo_longitude, ~ get_distance_to(.x, .y, lancaster))) %>% 
-  mutate(phil_drive = phil_drive = map2(.x = geo_latitude, .y = geo_longitude, ~ get_distance_to(.x, .y, philadelphia)))
+  mutate(lanc_drive = map2(.x = geo_latitude, .y = geo_longitude, ~ get_distance_to(.x, .y, lancaster)))
 beepr::beep()
 
 
@@ -141,6 +141,11 @@ for(i in 1:nrow(geo_data)){ # other way to do this if tidyverse syntax fails
   lanc_drive_times[[hash]] = temp_tbl
 }
 
+# Open Route Service Isochrones -------------------------------------------
+
+isochrome_test = ors_isochrones(lancaster, range = 1200, api_key = api_key, output = "sf")
+isochrome_30 = ors_isochrones(lancaster, range = 1800, api_key = api_key, output = "sf")
+isochrome_test_gj = ors_isochrones(lancaster, range = 1800, api_key = api_key)
 
 # Open Street Maps Visualizations -----------------------------------------
 
@@ -197,23 +202,21 @@ gg2 = details_cleaned %>%
         plot.background = element_rect(fill = "#282828"))
 
 
-# Open Route Service Isochrones -------------------------------------------
+# Adding House Type from RestB --------------------------------------------
 
-isochrome_test = ors_isochrones(lancaster, range = 1200, api_key = api_key, output = "sf")
-isochrome_30 = ors_isochrones(lancaster, range = 1800, api_key = api_key, output = "sf")
-isochrome_test_gj = ors_isochrones(lancaster, range = 1800, api_key = api_key)
+house_types = read_csv(glue('{details_path}/house_img_details_restbapi.csv')) %>% select(-X1)
 
-pt1 = ors_geocode(-76.3055, 40.0379, api_key = api_key)
-ors_profile("car")
-library(leaflet)
-leaflet() %>% 
-  addProviderTiles(providers$Stamen.Toner) %>% 
-  addGeoJSON(isochrome_test_gj, fill = T, color = "#EE2737", opacity = 1) %>% 
-  addGeoJSON(pt1, color = "#EE2737", weight = 6) %>%
-  fitBBox(isochrome_test$bbox)
+house_types %>% 
+  group_by(label) %>% 
+  summarise(n = n(),
+            avg_cl = mean(confidence)) %>% 
+  arrange(desc(n))
 
-
-
+details_cleaned %>% 
+  inner_join(., house_types, by = c('image_link' = 'link')) %>% 
+  group_by(label) %>% 
+  summarise(mean_pr_sqft = mean(est_price, na.rm = T),
+            homes = n())
 
 
 
