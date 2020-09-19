@@ -15,6 +15,12 @@ As part of the above scraping process, the `href` tag of the listing's cover ima
 
 In R, the OpenRouteService API is used to calculate the driving time and distance from each listing to both Lancaster and Philadelphia, PA. API tokens can be requested at https://openrouteservice.org/ . Note, with a free account, only 2000 directions requests can be made perday, thus it currently takes two attemps to run the code to generate these listings.
 
+Isochrones, representing driving times to the center of the county are also added to some of the maps so as to show the distance relative to a resident's commute into the city.
+
 ## RestB API
 
 Using a trial of the RestB API, a neural-based API for real estate listings. By passing the listing cover images to the api, a classification of, first whether the image is of a house, and in what style of architecture is the house built.
+
+## Zero Shot Natural Language Processing
+
+Using the listing descriptions from the houses collected, a zero-shot machine learning classifier is used to classify listings that mention "pool" into "Community Pool", "Private Pool", or "Not a Pool" classes. This allows us to create accurate descriptions of the amenities offered in the descriptions. This approach is similar in nature to methods like GPT-3 in that there is not an iterative training procedure to create the model. 
