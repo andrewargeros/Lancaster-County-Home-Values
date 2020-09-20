@@ -38,7 +38,8 @@ details_cleaned = details %>%
             year_built = as.integer(year_built),
             price_sqft = as.numeric(price_sqft),
             hoa = as.numeric(hoa)) %>% # Change Variable Types
-  mutate(est_price = price_sqft*floor_size_value)
+  mutate(est_price = price_sqft*floor_size_value) %>% 
+  mutate(listing_desc = str_remove_all(listing_desc, '"'))
 
 ad_cln = ad %>% 
   mutate(url_ext = str_replace_all(url, "^https://www.zillow.com", "")) %>% 
@@ -50,6 +51,9 @@ details_cleaned %>%
   select(id_hash, image_link) %>% 
   write_csv("photo_links_to_download.csv") # Download Images from this data frame (see ImageDownload.py)
 
+details_cleaned %>% 
+  select(id_hash, listing_desc) %>% 
+  write_csv(glue("{details_path}/Home_Listing_Descriptions.csv"))
 
 # Open Route Service  -----------------------------------------------------
 
@@ -218,7 +222,19 @@ details_cleaned %>%
   summarise(mean_pr_sqft = mean(est_price, na.rm = T),
             homes = n())
 
-
+gg2 = details_cleaned %>% 
+  ggplot() +
+  geom_sf(data = small_streets$osm_lines, col = 'grey40', size = .1) +
+  geom_sf(data = streets$osm_lines, col = 'grey40', size = .4) +
+  geom_sf(data = small_streets$osm_lines, col = alpha('grey40', .2), size = .1) +
+  geom_sf(data = streets$osm_lines, col = alpha('grey40', .2), size = .4) +
+  geom_pointdensity(aes(geo_longitude, geo_latitude, color = log(price_sqft)), size = 2, alpha = .8) +
+  scale_color_viridis_c(option = 'inferno') +
+  coord_sf(xlim = lancaster_co[1,], ylim = lancaster_co[2,], expand = TRUE) + 
+  geom_blank() +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#282828"))
 
 
 
