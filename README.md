@@ -23,4 +23,4 @@ Using a trial of the RestB API, a neural-based API for real estate listings. By 
 
 ## Zero Shot Natural Language Processing
 
-Using the listing descriptions from the houses collected, a zero-shot machine learning classifier is used to classify listings that mention "pool" into "Community Pool", "Private Pool", or "Not a Pool" classes. This allows us to create accurate descriptions of the amenities offered in the descriptions. This approach is similar in nature to methods like GPT-3 in that there is not an iterative training procedure to create the model. 
+Using the listing descriptions from the houses collected, a zero-shot machine learning classifier is used to classify listings that mention "pool" into "Community Pool", "Private Pool", or "Not a Pool" classes. This allows us to create accurate descriptions of the amenities offered in the descriptions. This approach is similar in nature to methods like GPT-3 in that there is not an iterative training procedure to create the model.
